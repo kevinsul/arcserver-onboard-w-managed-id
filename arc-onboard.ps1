@@ -44,7 +44,7 @@ $adminpass = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secre
 
 ##################################################create the $Cred variable in order to remotely connect to the target server using the proper local admin user/password.#########################################
 $password = ConvertTo-SecureString $adminpass.value -AsPlainText -Force
-$Cred = New-Object System.Management.Automation.PSCredential ("10.10.1.107\administrator", $password)
+$Cred = New-Object System.Management.Automation.PSCredential ("kds-win22-1\administrator", $password)
 #####################################################################################################################################################################################################################
 
 
