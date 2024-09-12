@@ -78,6 +78,7 @@ try {
         }
     }  
 
+    ###INPUT YOUR OWN VALUES HERE###
     $env:SUBSCRIPTION_ID = "00a1ec3b-475a-4c51-b020-d74c012c9c0f";
     $env:RESOURCE_GROUP = "arc-rg1";
     $env:TENANT_ID = "7c812b8f-fb02-4c38-becc-969bbae8b37b";
