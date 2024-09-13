@@ -5,6 +5,8 @@ param (
     [string]$targetserver
 )
 
+$targetserver = "10.10.1.107"
+
 ############################The following is used to retrieve the Arc-enabled Server's access token and then used to retrieve admin username and password from key vault#######################
 $apiVersion = "2020-06-01"
 $resource = "https://vault.azure.net/"
