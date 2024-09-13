@@ -32,12 +32,18 @@ if ($response)
     Write-Host "Access token: " $token
 }
 
-###Retrieve the admin username and admine password secrets###
+###Retrieve the SPNID, SPN secret, admin username and admin password secrets###
 #$adminusername = Invoke-RestMethod -Uri <INPUT URL TO KV SECRET HERE CONTAINING ADMIN USERNAME>?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
 #$adminpass = Invoke-RestMethod -Uri <INPUT URL TO KV SECRET HERE CONTAINING ADMIN PASSWORD>?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
+#$clientid = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/arcspnid?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
+#$clientsecret = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/arcspnsecret?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
+
 
 $adminusername = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/adminname?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
 $adminpass = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/adminpass?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
+$clientid = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/arcspnid?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
+$clientsecret = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/arcspnsecret?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
+
 ##########################################################################################################################################################################################################
 
 
@@ -78,12 +84,15 @@ try {
         }
     }  
 
+    $ServicePrincipalId=$Using:clientid.value;
+    $ServicePrincipalClientSecret=$Using:clientsecret.value;
+    
     ###INPUT YOUR OWN VALUES HERE###
     $env:SUBSCRIPTION_ID = "00a1ec3b-475a-4c51-b020-d74c012c9c0f";
     $env:RESOURCE_GROUP = "arc-rg1";
     $env:TENANT_ID = "7c812b8f-fb02-4c38-becc-969bbae8b37b";
     $env:LOCATION = "eastus";
-    $env:AUTH_TYPE = "principal";
+    #$env:AUTH_TYPE = "token";
     $env:CORRELATION_ID = "708433cd-7d87-445f-b294-86383ba961f8";
     $env:CLOUD = "AzureCloud";
     
@@ -91,11 +100,11 @@ try {
     Invoke-WebRequest -UseBasicParsing -Uri "https://aka.ms/azcmagent-windows" -TimeoutSec 30 -OutFile "$env:TEMP\install_windows_azcmagent.ps1";
     & "$env:TEMP\install_windows_azcmagent.ps1";
     if ($LASTEXITCODE -ne 0) { exit 1; }
-    & "$env:ProgramW6432\AzureConnectedMachineAgent\azcmagent.exe" connect --access-token $Using:token --resource-group "$env:RESOURCE_GROUP" --tenant-id "$env:TENANT_ID" --location "$env:LOCATION" --subscription-id "$env:SUBSCRIPTION_ID" --cloud "$env:CLOUD" --correlation-id "$env:CORRELATION_ID";
+    & "$env:ProgramW6432\AzureConnectedMachineAgent\azcmagent.exe" connect --service-principal-id  $ServicePrincipalId --service-principal-secret $ServicePrincipalClientSecret --resource-group "$env:RESOURCE_GROUP" --tenant-id "$env:TENANT_ID" --location "$env:LOCATION" --subscription-id "$env:SUBSCRIPTION_ID" --cloud "$env:CLOUD";
 }
 
 catch {
-    $logBody = @{subscriptionId="$env:SUBSCRIPTION_ID";resourceGroup="$env:RESOURCE_GROUP";tenantId="$env:TENANT_ID";location="$env:LOCATION";correlationId="$env:CORRELATION_ID";authType="$env:AUTH_TYPE";operation="onboarding";messageType=$_.FullyQualifiedErrorId;message="$_";};
+    $logBody = @{subscriptionId="$env:SUBSCRIPTION_ID";resourceGroup="$env:RESOURCE_GROUP";tenantId="$env:TENANT_ID";location="$env:LOCATION";correlationId="$env:CORRELATION_ID";operation="onboarding";messageType=$_.FullyQualifiedErrorId;message="$_";};
     Invoke-WebRequest -UseBasicParsing -Uri "https://gbl.his.arc.azure.com/log" -Method "PUT" -Body ($logBody | ConvertTo-Json) | out-null;
     Write-Host  -ForegroundColor red $_.Exception;
 }
