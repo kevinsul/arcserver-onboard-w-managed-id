@@ -1,12 +1,11 @@
 ﻿####  This script is used to connect to a Windows Server remotely using the PS Invoke-Command for the purposes of onboarding that server to Azure Arc.  ####
 
-#we need to know which server to target, 
+#we need to know which server to target 
 param (
     [string]$targetserver
 )
 
-
-############################The following is used to retrieve the Arc-enabled Server's access token and then used to retrieve admin username and password from key vault#######################
+###The following is used to retrieve the Arc-enabled Server's access token and then used to retrieve the SPNID, SPN secret, admin username and admin password secrets### 
 $apiVersion = "2020-06-01"
 $resource = "https://vault.azure.net/"
 $endpoint = "{0}?resource={1}&api-version={2}" -f $env:IDENTITY_ENDPOINT,$resource,$apiVersion
@@ -37,8 +36,6 @@ if ($response)
 #$adminpass = Invoke-RestMethod -Uri <INPUT URL TO KV SECRET HERE CONTAINING ADMIN PASSWORD>?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
 #$clientid = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/arcspnid?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
 #$clientsecret = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/arcspnsecret?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
-
-
 $adminusername = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/adminname?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
 $adminpass = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/adminpass?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
 $clientid = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/arcspnid?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
@@ -46,19 +43,15 @@ $clientsecret = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/se
 
 ##########################################################################################################################################################################################################
 
-
 ##################################################create the $Cred variable in order to remotely connect to the target server using the proper local admin user/password.#########################################
 $password = ConvertTo-SecureString $adminpass.value -AsPlainText -Force
 $Cred = New-Object System.Management.Automation.PSCredential ($adminusername.value, $password)
 #####################################################################################################################################################################################################################
 
-
-########################################Run the following script block to install the Arc Agent using system token and local admin user/password on the target server##################################################
+########################################Run the following script block to install the Arc Agent using retrieved SPN and local admin user/password on the target server##################################################
 Invoke-Command -ComputerName $targetserver -ScriptBlock {
     
-
 $global:scriptPath = $myinvocation.mycommand.definition
-
 function Restart-AsAdmin {
     $pwshCommand = "powershell"
     if ($PSVersionTable.PSVersion.Major -ge 6) {
@@ -92,7 +85,6 @@ try {
     $env:RESOURCE_GROUP = "arc-rg1";
     $env:TENANT_ID = "7c812b8f-fb02-4c38-becc-969bbae8b37b";
     $env:LOCATION = "eastus";
-    #$env:AUTH_TYPE = "token";
     $env:CORRELATION_ID = "708433cd-7d87-445f-b294-86383ba961f8";
     $env:CLOUD = "AzureCloud";
     
