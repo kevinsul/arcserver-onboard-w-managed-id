@@ -5,8 +5,6 @@ param (
     [string]$targetserver
 )
 
-$targetserver = "10.10.1.107"
-
 ############################The following is used to retrieve the Arc-enabled Server's access token and then used to retrieve admin username and password from key vault#######################
 $apiVersion = "2020-06-01"
 $resource = "https://vault.azure.net/"
@@ -44,7 +42,7 @@ $adminpass = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secre
 
 ##################################################create the $Cred variable in order to remotely connect to the target server using the proper local admin user/password.#########################################
 $password = ConvertTo-SecureString $adminpass.value -AsPlainText -Force
-$Cred = New-Object System.Management.Automation.PSCredential ("kds-win22-1\administrator", $password)
+$Cred = New-Object System.Management.Automation.PSCredential ($adminusername.value, $password)
 #####################################################################################################################################################################################################################
 
 
