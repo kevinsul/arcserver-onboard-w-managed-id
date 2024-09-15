@@ -22,13 +22,13 @@ catch
         $secretFile = ($wwwAuthHeader -split "Basic realm=")[1]
     }
 }
-Write-Host "Secret file path: " $secretFile`n
+#Write-Host "Secret file path: " $secretFile`n
 $secret = cat -Raw $secretFile
 $response = Invoke-WebRequest -Method GET -Uri $endpoint -Headers @{Metadata='True'; Authorization="Basic $secret"} -UseBasicParsing
 if ($response)
 {
     $token = (ConvertFrom-Json -InputObject $response.Content).access_token
-    Write-Host "Access token: " $token
+    #Write-Host "Access token: " $token
 }
 
 ###Retrieve the SPNID, SPN secret, admin username and admin password secrets###
