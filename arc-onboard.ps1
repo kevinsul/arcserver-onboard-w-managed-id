@@ -34,12 +34,8 @@ if ($response)
 ###Retrieve the SPNID, SPN secret, admin username and admin password secrets###
 #$adminusername = Invoke-RestMethod -Uri <INPUT URL TO KV SECRET HERE CONTAINING ADMIN USERNAME>?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
 #$adminpass = Invoke-RestMethod -Uri <INPUT URL TO KV SECRET HERE CONTAINING ADMIN PASSWORD>?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
-#$clientid = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/arcspnid?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
-#$clientsecret = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/arcspnsecret?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
-$adminusername = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/adminname?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
-$adminpass = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/adminpass?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
-$clientid = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/arcspnid?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
-$clientsecret = Invoke-RestMethod -Uri https://arconboard-kv1.vault.azure.net/secrets/arcspnsecret?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
+#$clientid = Invoke-RestMethod -Uri <INPUT URL TO KV SECRET HERE CONTAINING SPN ID>?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
+#$clientsecret = Invoke-RestMethod -Uri <INPUT URL TO KV SECRET HERE CONTAINING SPN secret>?api-version=2016-10-01 -Method GET -Headers @{Authorization="Bearer $token"}
 
 ##########################################################################################################################################################################################################
 
